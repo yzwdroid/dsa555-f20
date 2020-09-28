@@ -1,6 +1,6 @@
 template <typename T>
 class ArrayList{
-
+	
 public:
 	ArrayList(unsigned int cap=10);
 	void push_front(const T& data);
