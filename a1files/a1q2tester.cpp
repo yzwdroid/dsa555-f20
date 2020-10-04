@@ -5,7 +5,8 @@
 /*   To compile: g++ a2q1tester.cpp timer.cpp -std=c++0x                  */
 /*                                                                        */
 /*                                                                        */
-/*   version: 1.0                                                         */
+/*   version: 1.2 - fixed string issue                                    */
+/*            1.1 - fixed return value and merge checks                   */
 /*                                                                        */
 /**************************************************************************/
 
@@ -31,7 +32,7 @@ bool test12(std::string& error);
 const int numTests=12;
 typedef bool (*TestPtr)(std::string&);
 struct Record{
-    char word_[30];
+    std::string word_;
     int count_;
     std::string toString() const{ 
         std::string s="{";
@@ -695,6 +696,7 @@ bool test7(std::string& error){
             error += recs[i].toString();
         }
         else if(*const_result != recs[i]){
+            rc=false;
             error = "Error 7b: item found was not the one being searched for\n";
             error += "item found: ";
             error += (*const_result).toString();
@@ -722,6 +724,7 @@ bool test7(std::string& error){
             error += recs[i].toString();
         }
         else if(*result != recs[i]){
+            rc=false;
             error = "Error 7e: item found was not the one being searched for\n";
             error += "item found: ";
             error += (*result).toString();
@@ -999,6 +1002,10 @@ bool test9(std::string& error){  //Calvin and brown dog fox jumped lazy over qui
                 error += "original nodes were suppose to be relinked to form merged list.";
             }
         }
+        if(rc && !checkList(list3,sortedRecs,20)){
+            rc=false;
+            error = "Error 9g: merged list is not correctly ordered";
+        }
     }
     if(rc){
         SortedList<Record> list5;
@@ -1018,7 +1025,7 @@ bool test9(std::string& error){  //Calvin and brown dog fox jumped lazy over qui
         list6.merge(list5);
         if(list6.size()!=20 || list5.size() !=0 || list6.empty() || !list5.empty()){
             rc=false;
-            error = "Error 9g: merging two list resulted in at least one list\n";
+            error = "Error 9h: merging two list resulted in at least one list\n";
             error += "being the wrong size or not returning properly for  empty()";        
     
         }
@@ -1026,11 +1033,14 @@ bool test9(std::string& error){  //Calvin and brown dog fox jumped lazy over qui
         for(int i=0;rc && it!=list6.end();it++, i++){
             if(search(&(*it),locations,20) == -1){
                 rc=false;
-                error = "Error 9h: merged items were not suppose to be duplicates of what was merged\n";
+                error = "Error 9i: merged items were not suppose to be duplicates of what was merged\n";
                 error += "original nodes were suppose to be relinked to form merged list.";
             }
         }
-
+        if(rc && !checkList(list6,sortedRecs,20)){
+            rc=false;
+            error = "Error 9j: merged list is not correctly ordered";
+        }
     }
     if(rc){
         SortedList<Record> list7;
@@ -1049,7 +1059,7 @@ bool test9(std::string& error){  //Calvin and brown dog fox jumped lazy over qui
         list7.merge(list8);
         if(list7.size()!=40 || list8.size() !=0 || list7.empty() || !list8.empty()){
             rc=false;
-            error = "Error 9i: merging two list resulted in at least one list\n";
+            error = "Error 9k: merging two list resulted in at least one list\n";
             error += "being the wrong size or not returning properly for  empty()";        
     
         }
@@ -1057,10 +1067,18 @@ bool test9(std::string& error){  //Calvin and brown dog fox jumped lazy over qui
         for(int i=0;rc && it!=list7.end();it++, i++){
             if(&(*it)!=locations[i]){
                 rc=false;
-                error = "Error 9j: when items of the two lists contains an item of equal value";
+                error = "Error 9l: when items of the two lists contains an item of equal value";
                 error += "the item in current list goes before item in other";
             }
         }
+        it=list7.begin();
+        for(int i=0;rc && it!=list7.end();it++, i++){
+            if((*it)!=sortedRecs[i/2]){
+                rc=false;
+                error = "Error 9m: after merging two lists with duplicates the ordering is not correct";
+            }
+        }
+
 
     }
     return rc;
@@ -1284,7 +1302,7 @@ bool test11(std::string& error){
     return rc;   
 }
 
-/*Test 12: Timing runs, no errors for these.*/
+/*Test 12: Timing runs*/
 bool test12(std::string& error){
     int listSize=20000;
     Timer t;
@@ -1410,7 +1428,7 @@ std::ostream& operator<<(std::ostream& os, const Record rec){
 }
 bool operator==(const Record& a,const Record& b){
     bool rc=false;
-    if(strcmp(a.word_,b.word_)==0 && a.count_==b.count_){
+    if(a.word_==b.word_ && a.count_==b.count_){
         rc=true;
     }
     return rc;
@@ -1420,7 +1438,7 @@ bool operator!=(const Record& a,const Record& b){
 }
 bool operator <(const Record& a, const Record& b){
     bool rc=false;
-    if(strcmp(a.word_,b.word_) < 0){
+    if(a.word_< b.word_){
         rc=true;
     }
     return rc;
