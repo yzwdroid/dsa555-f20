@@ -5,7 +5,8 @@
 /*   To compile: g++ a2q1tester.cpp timer.cpp -std=c++0x                  */
 /*                                                                        */
 /*                                                                        */
-/*   version: 1.2 - fixed string issue                                    */
+/*   version: 1.3 - fixed issue in test12                                 */
+/*            1.2 - fixed string issue                                    */
 /*            1.1 - fixed return value and merge checks                   */
 /*                                                                        */
 /**************************************************************************/
@@ -1399,7 +1400,7 @@ bool test12(std::string& error){
     copy1=std::move(copy2);
     t.stop();
     std::cout << "move assignment on list with " << listSize << " nodes: " << t.currtime() << std::endl;
-    it = copy3.cbegin();
+    it = copy1.cbegin();
     for(int i=0;rc && i<listSize;i++){
         if(*it !=array[i]){
             rc=false;
