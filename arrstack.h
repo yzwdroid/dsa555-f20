@@ -8,7 +8,7 @@ class Stack{
 		for(int i=0;i<used_;i++){
 			newArray[i]=data_[i];
 		}
-		capacity_=capcity_*2;
+		capacity_=capacity_*2;
 		delete [] data_;
 		data_=newArray;
 	}
